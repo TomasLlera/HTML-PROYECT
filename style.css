@@ -105,10 +105,32 @@ aside a {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-footer{
-    display: flex;
+footer {
     background-color: #0172c1;
-    height: 60px;
+    color: #f1f1f1;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-left: 30px;
+    height: 120px;
+}
+
+footer .ft {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 10px; 
+}
+
+footer .ft h5 {
+    color: black;
+    margin-bottom: 5px;
+}
+
+footer .ft a {
+    color: white;
+}
+
+footer .ft a:hover {
+    color: black;
 }
 .card h4, h6, p, details {
     margin-top: 8px;
