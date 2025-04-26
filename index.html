@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="script.js">
     <title>ScoreTrack</title>
 </head>
 
@@ -26,24 +27,24 @@
         </nav>
     </header>
     <div class="row">
-        <aside class="leftcolumn">
-            <h3>Resultados en Vivo</h3>
-            <table id="tablaResultados">
+        <aside class="fixture-panel">
+            <h2>🇦🇷 LIGA ARGENTINA</h2>
+            <table>
                 <thead>
                     <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
                         <th>Local</th>
-                        <th>Resultado</th>
+                        <th></th>
                         <th>Visitante</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Los resultados se cargarán desde JS -->
-                </tbody>
+                <tbody id="partidos"></tbody>
             </table>
         </aside>
         <section class="rightcolumn">
             <div class="ex">
-                <h2><u>Noticias que pueden interesarte:</u></h2>
+                <h3><u>NOTICIAS QUE PUEDEN INTERESARTE:</u></h3>
             </div>
             <div class="desing-card">
                 <article class="card">
@@ -105,10 +106,69 @@
         </div>
     </footer>
     <script>
+        const partidosMostrados = new Set();
+
+        const formatearFecha = (iso) => {
+            const d = new Date(iso);
+            return `${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(-2)}`;
+        };
+
+        const formatearHora = (iso) => new Date(iso).toTimeString().slice(0, 5);
+
+        const limpiarNombre = (nombre) => {
+            if (nombre.includes('Central Córdoba')) return 'Central Córdoba';
+            if (nombre.includes('Sarmiento')) return 'Sarmiento';
+            return nombre;
+        };
+
+        const obtenerPartidos = () => {
+            const fechaInicio = '2025-04-25';
+            const fechaFin = '2025-04-28';
+
+            fetch(`https://api-football-v1.p.rapidapi.com/v3/fixtures?league=128&season=2025&from=${fechaInicio}&to=${fechaFin}&timezone=America/Argentina/Buenos_Aires`, {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-key': 'eac91fb003mshbe7339eea1ddb12p1472d2jsna1573cf5a05b',
+                    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('partidos');
+                    tbody.innerHTML = '';
+
+                    if (data.response?.length > 0) {
+                        data.response.forEach(partido => {
+                            const { fixture, teams, goals } = partido;
+                            const id = fixture.id;
+
+                            if (partidosMostrados.has(id)) return;
+                            partidosMostrados.add(id);
+
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+              <td>${formatearFecha(fixture.date)}</td>
+              <td>${formatearHora(fixture.date)}</td>
+              <td>${limpiarNombre(teams.home.name)}</td>
+              <td><strong>${goals.home ?? '-'} - ${goals.away ?? '-'}</strong></td>
+              <td>${limpiarNombre(teams.away.name)}</td>
+            `;
+                            tbody.appendChild(row);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5">Sin partidos este finde</td></tr>';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('partidos').innerHTML = '<tr><td colspan="5">Error al cargar</td></tr>';
+                });
+        };
+
+        obtenerPartidos();
+
         function alerta() {
             alert("¡Hola, todavia estamos trabajando en esta sección!");
         }
     </script>
 </body>
-
 </html>
