@@ -65,5 +65,3 @@ The idea of the project is to create a clear, easy, and fast website to quickly 
 ## 🖥️ Link directo/Direct Link
 
 - https://tomasllera.github.io/HTML-PROYECT/
-
-- https://tomasllera.github.io/HTML-PROYECT/
